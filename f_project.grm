@@ -1,0 +1,120 @@
+"Name"     = 'Python Simple Grammar'
+"Author"   = 'Python Gold Parser Grammar'
+"Version"  = '1.0'
+"About"    = 'Simple Python grammar for Gold Parser'
+
+"Case Sensitive" = true
+"Start Symbol" = <Program>
+
+! ================================================================
+! Character Sets
+! ================================================================
+
+{ID Head}      = {Letter} + [_]
+{ID Tail}      = {Alphanumeric} + [_] 
+{String Chars} = {Printable} - ["]
+{Hex Digit}    = {Digit} + [ABCDEFabcdef]
+
+! ================================================================
+! Terminals
+! ================================================================
+
+Identifier    = {ID Head}{ID Tail}*
+StringLiteral = '"'{String Chars}*'"'
+IntLiteral    = {Digit}+
+FloatLiteral  = {Digit}+'.'{Digit}+
+Comment       = '#'{Printable}*
+
+! ================================================================
+! Rules
+! ================================================================
+
+<Program> ::= <StatementList>
+
+<StatementList> ::= <Statement>
+                 |  <StatementList> <Statement>
+
+<Statement> ::= <AssignStmt>
+             |  <PrintStmt>
+             |  <IfStmt>
+             |  <WhileStmt>
+             |  <ForStmt>
+             |  <FunctionDef>
+             |  <ReturnStmt>
+             |  <ExpressionStmt>
+
+<AssignStmt> ::= Identifier '=' <Expression>
+
+<PrintStmt> ::= 'print' '(' <Expression> ')'
+
+<IfStmt> ::= 'if' <Expression> ':' <Block>
+          |  'if' <Expression> ':' <Block> 'else' ':' <Block>
+
+<WhileStmt> ::= 'while' <Expression> ':' <Block>
+
+<ForStmt> ::= 'for' Identifier 'in' <Expression> ':' <Block>
+
+<FunctionDef> ::= 'def' Identifier '(' <ParameterList> ')' ':' <Block>
+               |  'def' Identifier '(' ')' ':' <Block>
+
+<ReturnStmt> ::= 'return' <Expression>
+              |  'return'
+
+<ExpressionStmt> ::= <Expression>
+
+<Block> ::= <StatementList>
+
+<ParameterList> ::= Identifier
+                 |  <ParameterList> ',' Identifier
+
+<Expression> ::= <OrExpr>
+
+<OrExpr> ::= <AndExpr>
+          |  <OrExpr> 'or' <AndExpr>
+
+<AndExpr> ::= <NotExpr>
+           |  <AndExpr> 'and' <NotExpr>
+
+<NotExpr> ::= <CompExpr>
+           |  'not' <NotExpr>
+
+<CompExpr> ::= <AddExpr>
+            |  <CompExpr> '==' <AddExpr>
+            |  <CompExpr> '!=' <AddExpr>
+            |  <CompExpr> '<' <AddExpr>
+            |  <CompExpr> '>' <AddExpr>
+            |  <CompExpr> '<=' <AddExpr>
+            |  <CompExpr> '>=' <AddExpr>
+
+<AddExpr> ::= <MultExpr>
+           |  <AddExpr> '+' <MultExpr>
+           |  <AddExpr> '-' <MultExpr>
+
+<MultExpr> ::= <UnaryExpr>
+            |  <MultExpr> '*' <UnaryExpr>
+            |  <MultExpr> '/' <UnaryExpr>
+            |  <MultExpr> '%' <UnaryExpr>
+
+<UnaryExpr> ::= <PrimaryExpr>
+             |  '-' <UnaryExpr>
+             |  '+' <UnaryExpr>
+
+<PrimaryExpr> ::= Identifier
+               |  IntLiteral
+               |  FloatLiteral
+               |  StringLiteral
+               |  'True'
+               |  'False'
+               |  'None'
+               |  '(' <Expression> ')'
+               |  <FunctionCall>
+               |  <ListExpr>
+
+<FunctionCall> ::= Identifier '(' <ArgumentList> ')'
+                |  Identifier '(' ')'
+
+<ArgumentList> ::= <Expression>
+                |  <ArgumentList> ',' <Expression>
+
+<ListExpr> ::= '[' <ArgumentList> ']'
+            |  '[' ']'
